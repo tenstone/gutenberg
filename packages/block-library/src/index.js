@@ -72,7 +72,8 @@ import * as postCommentsCount from './post-comments-count';
 import * as postCommentsForm from './post-comments-form';
 import * as postDate from './post-date';
 import * as postExcerpt from './post-excerpt';
-
+import * as query from './query';
+import { registerQueryStore, registerDeduplicatedBlock } from './query/store';
 /**
  * Function to register an individual block.
  *
@@ -201,8 +202,14 @@ export const __experimentalRegisterExperimentalCoreBlocks =
 								postCommentsForm,
 								postDate,
 								postExcerpt,
+								query,
 						  ]
 						: [] ),
 				].forEach( registerBlock );
+
+				if ( __experimentalEnableFullSiteEditing ) {
+					registerQueryStore();
+					registerDeduplicatedBlock( `core/${ query.name }` );
+				}
 		  }
 		: undefined;
