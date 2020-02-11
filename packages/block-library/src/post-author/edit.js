@@ -164,23 +164,6 @@ function PostAuthorDisplay( { props, author, authors } ) {
 						className={ blockClassNames }
 						style={ blockInlineStyles }
 					>
-						{ ( ! RichText.isEmpty( byline ) || isSelected ) && (
-							<RichText
-								className="wp-block-post-author__byline"
-								multiline={ false }
-								placeholder={ __( 'Write byline …' ) }
-								withoutInteractiveFormatting
-								allowedFormats={ [
-									'core/bold',
-									'core/italic',
-									'core/strikethrough',
-								] }
-								value={ byline }
-								onChange={ ( value ) =>
-									props.setAttributes( { byline: value } )
-								}
-							/>
-						) }
 						{ showAvatar && (
 							<div className="wp-block-post-author__avatar">
 								<img
@@ -191,6 +174,24 @@ function PostAuthorDisplay( { props, author, authors } ) {
 							</div>
 						) }
 						<div className="wp-block-post-author__content">
+							{ ( ! RichText.isEmpty( byline ) ||
+								isSelected ) && (
+								<RichText
+									className="wp-block-post-author__byline"
+									multiline={ false }
+									placeholder={ __( 'Write byline …' ) }
+									withoutInteractiveFormatting
+									allowedFormats={ [
+										'core/bold',
+										'core/italic',
+										'core/strikethrough',
+									] }
+									value={ byline }
+									onChange={ ( value ) =>
+										props.setAttributes( { byline: value } )
+									}
+								/>
+							) }
 							<p className="wp-block-post-author__name">
 								{ props.attributes.name }
 							</p>

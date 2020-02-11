@@ -5,12 +5,16 @@
 
 	&__byline {
 		width: 100%;
-		margin-top: $grid-size-large;
+		margin-top: 0;
 		margin-bottom: $grid-size-large;
 	}
 
 	&__avatar {
 		margin-right: $grid-size-large;
+	}
+
+	&__bio {
+		margin-top: $grid-size-large;
 	}
 
 	&__content {
@@ -20,6 +24,7 @@
 
 	&__name {
 		font-weight: bold;
+		margin: 0;
 	}
 
 }

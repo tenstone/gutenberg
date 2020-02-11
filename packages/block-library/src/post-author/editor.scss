@@ -5,7 +5,11 @@
 }
 
 .wp-block-post-author__byline {
-	width: 100%;
+	color: $dark-gray-300;
+	font-size: $default-font-size;
+	margin-top: 0;
+	position: relative;
+	font-style: normal;
 }
 
 .wp-block-post-author__content {
@@ -14,10 +18,17 @@
 }
 
 .block-editor__container .wp-block-post-author__avatar img {
-	margin: $grid-size-small;
+	margin: 0;
 }
 
 .block-editor__container .wp-block-post-author__name {
 	margin: 0;
+	margin-top: -$grid-size-large/2;
+	margin-bottom: -$grid-size-large/2;
 	font-weight: bold;
+}
+
+.block-editor__container .wp-block-post-author__bio {
+	margin: 0;
+	margin-top: $grid-size-large;
 }
