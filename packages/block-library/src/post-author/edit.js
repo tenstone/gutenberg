@@ -60,7 +60,7 @@ function PostAuthorDisplay( { props, author, authors } ) {
 		[ fontSize.size ]
 	);
 
-	const { id, showAvatar, showBio, byline } = props.attributes;
+	const { align, id, showAvatar, showBio, byline } = props.attributes;
 
 	const avatarSizes = [
 		{ value: 24, label: __( 'Small' ) },
@@ -148,7 +148,12 @@ function PostAuthorDisplay( { props, author, authors } ) {
 			{ InspectorControlsColorPanel }
 
 			<BlockControls>
-				<AlignmentToolbar />
+				<AlignmentToolbar
+					value={ align }
+					onChange={ ( nextAlign ) => {
+						props.setAttributes( { align: nextAlign } );
+					} }
+				/>
 				<BlockColorsStyleSelector
 					TextColor={ TextColor }
 					BackgroundColor={ BackgroundColor }
@@ -161,7 +166,9 @@ function PostAuthorDisplay( { props, author, authors } ) {
 				<BackgroundColor>
 					<div
 						ref={ ref }
-						className={ blockClassNames }
+						className={ classnames( blockClassNames, {
+							[ `has-text-align-${ align }` ]: align,
+						} ) }
 						style={ blockInlineStyles }
 					>
 						{ showAvatar && (
@@ -196,7 +203,7 @@ function PostAuthorDisplay( { props, author, authors } ) {
 								{ props.attributes.name }
 							</p>
 							{ showBio && (
-								<p className="wp-block-post-author__bio">
+								<p className={ 'wp-block-post-author__bio' }>
 									{ props.attributes.description }
 								</p>
 							) }

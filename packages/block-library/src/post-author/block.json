@@ -2,6 +2,9 @@
 	"name": "core/post-author",
 	"category": "layout",
 	"attributes": {
+		"align": {
+			"type": "string"
+		},
 		"id": {
 			"type": "number"
 		},
