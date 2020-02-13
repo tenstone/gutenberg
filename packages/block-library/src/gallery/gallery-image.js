@@ -129,7 +129,7 @@ class GalleryImage extends Component {
 
 	/**
 	 * Note that, unlike the DOM, all React events bubble,
-	 * so this will be called after the onBlur event of any figure's children.
+	 * so this will be called after the onFocus event of any figure's children.
 	 */
 	onFocus() {
 		this.debouncedOnDeselect.cancel();
