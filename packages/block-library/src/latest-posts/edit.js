@@ -125,24 +125,6 @@ class LatestPostsEdit extends Component {
 							}
 						/>
 					) }
-					{ displayPostContent && (
-						<RadioControl
-							label={ __( 'Show:' ) }
-							selected={ displayPostContentRadio }
-							options={ [
-								{ label: __( 'Excerpt' ), value: 'excerpt' },
-								{
-									label: __( 'Full post' ),
-									value: 'full_post',
-								},
-							] }
-							onChange={ ( value ) =>
-								setAttributes( {
-									displayPostContentRadio: value,
-								} )
-							}
-						/>
-					) }
 					{ displayPostContent &&
 						displayPostContentRadio === 'excerpt' && (
 							<RangeControl
@@ -206,7 +188,7 @@ class LatestPostsEdit extends Component {
 							/>
 							<BaseControl>
 								<BaseControl.VisualLabel>
-									{ __( 'Image Alignment' ) }
+									{ __( 'Image alignment' ) }
 								</BaseControl.VisualLabel>
 								<BlockAlignmentToolbar
 									value={ featuredImageAlign }
