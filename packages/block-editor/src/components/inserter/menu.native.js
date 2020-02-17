@@ -167,8 +167,11 @@ export default compose(
 
 		//describe as a generic solution for more than 1 block
 		//allow to pass block-specific checks from block or pass
-		const autoInsertBlock = items <=1 && destinationRootBlockName === 'core/columns' && { name: 'core/column' };
-	
+		const autoInsertBlock = items <= 1 &&
+			destinationRootBlockName === 'core/columns' && {
+				name: 'core/column',
+			};
+
 		const {
 			__experimentalShouldInsertAtTheTop: shouldInsertAtTheTop,
 		} = getSettings();
