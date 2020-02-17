@@ -1,5 +1,9 @@
 ## Master
 
+### New Features
+
+- The bundled `puppeteer` dependency has been updated from requiring `^2.0.0` to requiring `^2.1.1` ([#20268](https://github.com/WordPress/gutenberg/pull/20268)). It uses Chromium v80 instead of Chromium v79. See the [full list of changes](https://github.com/GoogleChrome/puppeteer/releases/tag/v2.1.0).
+
 ## 7.1.0 (2020-02-10)
 
 ### Bug Fixes
