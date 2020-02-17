@@ -12,6 +12,7 @@ import {
  */
 import { __ } from '@wordpress/i18n';
 import { Picker } from '@wordpress/components';
+import { update } from '@wordpress/icons';
 
 export const MEDIA_TYPE_IMAGE = 'image';
 
@@ -30,7 +31,7 @@ const replaceOption = {
 	value: mediaSources.deviceLibrary,
 	label: __( 'Replace' ),
 	types: [ MEDIA_TYPE_IMAGE ],
-	icon: 'update',
+	icon: update,
 };
 
 const options = [ editOption, replaceOption ];
@@ -72,13 +73,16 @@ export class MediaEdit extends React.Component {
 		const mediaOptions = () => (
 			<Picker
 				hideCancelButton
-				ref={ ( instance ) => this.picker = instance }
+				ref={ ( instance ) => ( this.picker = instance ) }
 				options={ this.getMediaOptionsItems() }
 				onChange={ this.onPickerSelect }
 			/>
 		);
 
-		return this.props.render( { open: this.onPickerPresent, mediaOptions } );
+		return this.props.render( {
+			open: this.onPickerPresent,
+			mediaOptions,
+		} );
 	}
 }
 

@@ -21,7 +21,7 @@ const {
 	getArgFromCLI,
 	getFileArgsFromCLI,
 	hasArgInCLI,
-	hasPackageProp,
+	hasPrettierConfig,
 	hasProjectFile,
 } = require( '../utils' );
 
@@ -32,11 +32,17 @@ function checkPrettier() {
 		const prettierPackageJson = readPkgUp( { cwd: prettierResolvePath } );
 		const prettierPackageName = prettierPackageJson.pkg.name;
 
-		if ( ! [ 'wp-prettier', '@wordpress/prettier' ].includes( prettierPackageName ) ) {
+		if (
+			! [ 'wp-prettier', '@wordpress/prettier' ].includes(
+				prettierPackageName
+			)
+		) {
 			return {
 				success: false,
 				message:
-					chalk.red( 'Incompatible version of Prettier was found in your project\n' ) +
+					chalk.red(
+						'Incompatible version of Prettier was found in your project\n'
+					) +
 					"You need to install the 'wp-prettier' package to get " +
 					'code formatting compliant with the WordPress coding standards.\n\n',
 			};
@@ -45,30 +51,11 @@ function checkPrettier() {
 		return {
 			success: false,
 			message:
-				chalk.red( "The 'prettier' package was not found in your project\n" ) +
+				chalk.red(
+					"The 'prettier' package was not found in your project\n"
+				) +
 				"You need to install the 'wp-prettier' package under an alias to get " +
 				'code formatting compliant with the WordPress coding standards.\n\n',
-		};
-	}
-
-	// See: https://prettier.io/docs/en/configuration.html
-	const hasProjectPrettierConfig =
-		hasProjectFile( '.prettierrc' ) ||
-		hasProjectFile( '.prettierrc.json' ) ||
-		hasProjectFile( '.prettierrc.yaml' ) ||
-		hasProjectFile( '.prettierrc.yml' ) ||
-		hasProjectFile( '.prettierrc.js' ) ||
-		hasProjectFile( '.prettierrc.config.js' ) ||
-		hasProjectFile( '.prettierrc.toml' ) ||
-		hasPackageProp( 'prettier' );
-
-	if ( ! hasProjectPrettierConfig ) {
-		return {
-			success: false,
-			message:
-				chalk.red( 'The Prettier config file was not found in your project\n' ) +
-				'You need to create a top-level Prettier config file in your project to get ' +
-				'automatic code formatting that works with IDE and editor integrations.\n\n',
 		};
 	}
 
@@ -79,6 +66,15 @@ const checkResult = checkPrettier();
 if ( ! checkResult.success ) {
 	stdout.write( checkResult.message );
 	exit( 1 );
+}
+
+// Check for existing config in project, if it exists no command-line args are
+// needed for config, otherwise pass in args to default config in packages
+// See: https://prettier.io/docs/en/configuration.html
+let configArgs = [];
+// TODO: once setup, use @wordpress/prettier-config
+if ( ! hasPrettierConfig() ) {
+	configArgs = [ '--config', fromConfigRoot( '.prettierrc.js' ) ];
 }
 
 // If `--ignore-path` is not explicitly specified, use the project's or global .eslintignore
@@ -94,7 +90,9 @@ const ignoreArgs = [ '--ignore-path', ignorePath ];
 
 // forward the --require-pragma option that formats only files that already have the @format
 // pragma in the first docblock.
-const pragmaArgs = hasArgInCLI( '--require-pragma' ) ? [ '--require-pragma' ] : [];
+const pragmaArgs = hasArgInCLI( '--require-pragma' )
+	? [ '--require-pragma' ]
+	: [];
 
 // Get the files and directories to format and convert them to globs
 let fileArgs = getFileArgsFromCLI();
@@ -107,7 +105,7 @@ const globArgs = dirGlob( fileArgs, { extensions: [ 'js' ] } );
 
 const result = spawn(
 	resolveBin( 'prettier' ),
-	[ '--write', ...ignoreArgs, ...pragmaArgs, ...globArgs ],
+	[ '--write', ...configArgs, ...ignoreArgs, ...pragmaArgs, ...globArgs ],
 	{ stdio: 'inherit' }
 );
 

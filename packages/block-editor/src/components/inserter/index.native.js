@@ -2,11 +2,17 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Dropdown, ToolbarButton, Dashicon, Picker } from '@wordpress/components';
+import { Dropdown, ToolbarButton, Picker } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 import { withSelect } from '@wordpress/data';
 import { compose, withPreferredColorScheme } from '@wordpress/compose';
 import { isUnmodifiedDefaultBlock } from '@wordpress/blocks';
+import {
+	Icon,
+	plusCircleFilled,
+	insertAfter,
+	insertBefore,
+} from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -18,7 +24,13 @@ import BlockInsertionPoint from '../block-list/insertion-point';
 const defaultRenderToggle = ( { onToggle, disabled, style, onLongPress } ) => (
 	<ToolbarButton
 		title={ __( 'Add block' ) }
-		icon={ ( <Dashicon icon="plus-alt" style={ style } color={ style.color } /> ) }
+		icon={
+			<Icon
+				icon={ plusCircleFilled }
+				style={ style }
+				color={ style.color }
+			/>
+		}
 		onClick={ onToggle }
 		extraProps={ {
 			hint: __( 'Double tap to add a block' ),
@@ -44,37 +56,41 @@ export class Inserter extends Component {
 		const addBeforeOption = {
 			value: 'before',
 			label: __( 'Add Block Before' ),
-			icon: 'insert-before',
+			icon: insertBefore,
 		};
 
 		const replaceCurrentOption = {
 			value: 'replace',
 			label: __( 'Replace Current Block' ),
-			icon: 'plus-alt',
+			icon: plusCircleFilled,
 		};
 
 		const addAfterOption = {
 			value: 'after',
 			label: __( 'Add Block After' ),
-			icon: 'insert-after',
+			icon: insertAfter,
 		};
 
 		const addToBeginningOption = {
 			value: 'before',
 			label: __( 'Add To Beginning' ),
-			icon: 'insert-before',
+			icon: insertBefore,
 		};
 
 		const addToEndOption = {
 			value: 'after',
 			label: __( 'Add To End' ),
-			icon: 'insert-after',
+			icon: insertAfter,
 		};
 
 		const { isAnyBlockSelected, isSelectedBlockReplaceable } = this.props;
 		if ( isAnyBlockSelected ) {
 			if ( isSelectedBlockReplaceable ) {
-				return [ addBeforeOption, replaceCurrentOption, addAfterOption ];
+				return [
+					addBeforeOption,
+					replaceCurrentOption,
+					addAfterOption,
+				];
 			}
 			return [ addBeforeOption, addAfterOption ];
 		}
@@ -97,9 +113,7 @@ export class Inserter extends Component {
 	}
 
 	shouldReplaceBlock( insertionType ) {
-		const {
-			isSelectedBlockReplaceable,
-		} = this.props;
+		const { isSelectedBlockReplaceable } = this.props;
 		if ( insertionType === 'replace' ) {
 			return true;
 		}
@@ -138,14 +152,20 @@ export class Inserter extends Component {
 		if ( showSeparator && isOpen ) {
 			return <BlockInsertionPoint />;
 		}
-		const style = getStylesFromColorScheme( styles.addBlockButton, styles.addBlockButtonDark );
+		const style = getStylesFromColorScheme(
+			styles.addBlockButton,
+			styles.addBlockButtonDark
+		);
 
 		const onPress = () => {
-			this.setState( {
-				destinationRootClientId: this.props.destinationRootClientId,
-				shouldReplaceBlock: this.shouldReplaceBlock( 'default' ),
-				insertionIndex: this.getInsertionIndex( 'default' ),
-			}, onToggle );
+			this.setState(
+				{
+					destinationRootClientId: this.props.destinationRootClientId,
+					shouldReplaceBlock: this.shouldReplaceBlock( 'default' ),
+					insertionIndex: this.getInsertionIndex( 'default' ),
+				},
+				onToggle
+			);
 		};
 
 		const onLongPress = () => {
@@ -155,11 +175,16 @@ export class Inserter extends Component {
 		};
 
 		const onPickerSelect = ( insertionType ) => {
-			this.setState( {
-				destinationRootClientId: this.props.destinationRootClientId,
-				shouldReplaceBlock: this.shouldReplaceBlock( insertionType ),
-				insertionIndex: this.getInsertionIndex( insertionType ),
-			}, onToggle );
+			this.setState(
+				{
+					destinationRootClientId: this.props.destinationRootClientId,
+					shouldReplaceBlock: this.shouldReplaceBlock(
+						insertionType
+					),
+					insertionIndex: this.getInsertionIndex( insertionType ),
+				},
+				onToggle
+			);
 		};
 
 		return (
@@ -191,10 +216,7 @@ export class Inserter extends Component {
 	 * @return {WPElement} Dropdown content element.
 	 */
 	renderContent( { onClose, isOpen } ) {
-		const {
-			clientId,
-			isAppender,
-		} = this.props;
+		const { clientId, isAppender } = this.props;
 		const {
 			destinationRootClientId,
 			shouldReplaceBlock,
@@ -240,22 +262,25 @@ export default compose( [
 		// `end` argument (id) can refer to the component which is removed
 		// due to pressing `undo` button, that's why we need to check
 		// if `getBlock( end) is valid, otherwise `null` is passed
-		const isAnyBlockSelected = ( ! isAppender && end && getBlock( end ) );
-		const destinationRootClientId = isAnyBlockSelected ?
-			getBlockRootClientId( end ) :
-			rootClientId;
-		const selectedBlockIndex = getBlockIndex( end, destinationRootClientId );
+		const isAnyBlockSelected = ! isAppender && end && getBlock( end );
+		const destinationRootClientId = isAnyBlockSelected
+			? getBlockRootClientId( end )
+			: rootClientId;
+		const selectedBlockIndex = getBlockIndex(
+			end,
+			destinationRootClientId
+		);
 		const endOfRootIndex = getBlockOrder( rootClientId ).length;
-		const isSelectedUnmodifiedDefaultBlock = isAnyBlockSelected ?
-			isUnmodifiedDefaultBlock( getBlock( end ) ) :
-			undefined;
+		const isSelectedUnmodifiedDefaultBlock = isAnyBlockSelected
+			? isUnmodifiedDefaultBlock( getBlock( end ) )
+			: undefined;
 
 		function getDefaultInsertionIndex() {
-			const {
-				getSettings,
-			} = select( 'core/block-editor' );
+			const { getSettings } = select( 'core/block-editor' );
 
-			const { __experimentalShouldInsertAtTheTop: shouldInsertAtTheTop } = getSettings();
+			const {
+				__experimentalShouldInsertAtTheTop: shouldInsertAtTheTop,
+			} = getSettings();
 
 			// if post title is selected insert as first block
 			if ( shouldInsertAtTheTop ) {
@@ -282,13 +307,13 @@ export default compose( [
 			return endOfRootIndex;
 		}
 
-		const insertionIndexBefore = isAnyBlockSelected ?
-			selectedBlockIndex :
-			0;
+		const insertionIndexBefore = isAnyBlockSelected
+			? selectedBlockIndex
+			: 0;
 
-		const insertionIndexAfter = isAnyBlockSelected ?
-			selectedBlockIndex + 1 :
-			endOfRootIndex;
+		const insertionIndexAfter = isAnyBlockSelected
+			? selectedBlockIndex + 1
+			: endOfRootIndex;
 
 		return {
 			destinationRootClientId,

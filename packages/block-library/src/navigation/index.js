@@ -9,6 +9,7 @@ import { menu as icon } from '@wordpress/icons';
  */
 import edit from './edit';
 import save from './save';
+import deprecated from './deprecated';
 
 export const name = 'core/navigation';
 
@@ -39,4 +40,5 @@ export const settings = {
 
 	save,
 
+	deprecated,
 };
