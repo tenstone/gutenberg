@@ -185,16 +185,28 @@ export class Inserter extends Component {
 		};
 
 		const onPickerSelect = ( insertionType ) => {
-			this.setState(
-				{
-					destinationRootClientId: this.props.destinationRootClientId,
-					shouldReplaceBlock: this.shouldReplaceBlock(
-						insertionType
-					),
-					insertionIndex: this.getInsertionIndex( insertionType ),
-				},
-				onToggle
-			);
+			const {
+				isVerticalBlock,
+				onBlockAdd,
+				destinationRootClientId,
+			} = this.props;
+
+			const insertionIndex = this.getInsertionIndex( insertionType );
+
+			if ( isVerticalBlock ) {
+				onBlockAdd( destinationRootClientId, insertionIndex );
+			} else {
+				this.setState(
+					{
+						destinationRootClientId,
+						shouldReplaceBlock: this.shouldReplaceBlock(
+							insertionType
+						),
+						insertionIndex,
+					},
+					onToggle
+				);
+			}
 		};
 
 		return (
