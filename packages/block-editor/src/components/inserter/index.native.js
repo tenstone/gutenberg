@@ -9,9 +9,9 @@ import {
 	Picker,
 } from '@wordpress/components';
 import { Component } from '@wordpress/element';
-import { withSelect } from '@wordpress/data';
+import { withSelect, withDispatch } from '@wordpress/data';
 import { compose, withPreferredColorScheme } from '@wordpress/compose';
-import { isUnmodifiedDefaultBlock } from '@wordpress/blocks';
+import { isUnmodifiedDefaultBlock, createBlock } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -140,6 +140,7 @@ export class Inserter extends Component {
 	renderToggle( { onToggle, isOpen } ) {
 		const {
 			disabled,
+			lockAdd,
 			renderToggle = defaultRenderToggle,
 			getStylesFromColorScheme,
 			showSeparator,
@@ -153,14 +154,28 @@ export class Inserter extends Component {
 		);
 
 		const onPress = () => {
-			this.setState(
-				{
-					destinationRootClientId: this.props.destinationRootClientId,
-					shouldReplaceBlock: this.shouldReplaceBlock( 'default' ),
-					insertionIndex: this.getInsertionIndex( 'default' ),
-				},
-				onToggle
-			);
+			const {
+				isVerticalBlock,
+				onBlockAdd,
+				destinationRootClientId,
+			} = this.props;
+
+			const insertionIndex = this.getInsertionIndex( 'default' );
+
+			if ( isVerticalBlock ) {
+				onBlockAdd( destinationRootClientId, insertionIndex );
+			} else {
+				this.setState(
+					{
+						destinationRootClientId,
+						shouldReplaceBlock: this.shouldReplaceBlock(
+							'default'
+						),
+						insertionIndex,
+					},
+					onToggle
+				);
+			}
 		};
 
 		const onLongPress = () => {
@@ -187,7 +202,7 @@ export class Inserter extends Component {
 				{ renderToggle( {
 					onToggle: onPress,
 					isOpen,
-					disabled,
+					disabled: disabled || lockAdd,
 					style,
 					onLongPress,
 				} ) }
@@ -251,6 +266,8 @@ export default compose( [
 			getBlockOrder,
 			getBlockIndex,
 			getBlock,
+			getBlockName,
+			getBlockCount,
 		} = select( 'core/block-editor' );
 
 		const end = getBlockSelectionEnd();
@@ -317,8 +334,30 @@ export default compose( [
 			insertionIndexAfter,
 			isAnyBlockSelected,
 			isSelectedBlockReplaceable: isSelectedUnmodifiedDefaultBlock,
+			// TODO: create selector to pull verticalBlocks
+			isVerticalBlock:
+				getBlockName( destinationRootClientId ) === 'core/columns',
+			// TODO: how to pass info about lock appender or number of allowed blocks
+			lockAdd: ! ( getBlockCount( destinationRootClientId ) < 6 ),
 		};
 	} ),
+	withDispatch( ( dispatch ) => {
+		const { insertBlock } = dispatch( 'core/block-editor' );
 
+		return {
+			onBlockAdd( destinationRootClientId, insertionIndex ) {
+				// TODO: how to pass items from block
+				const { name = 'core/column', initialAttributes = {} } = {};
+
+				const insertedBlock = createBlock( name, initialAttributes );
+
+				insertBlock(
+					insertedBlock,
+					insertionIndex,
+					destinationRootClientId
+				);
+			},
+		};
+	} ),
 	withPreferredColorScheme,
 ] )( Inserter );
