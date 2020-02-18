@@ -56,21 +56,15 @@ export { default as withColorContext } from './color-palette/with-color-context'
  * Content Related Components
  */
 
-export { default as __experimentalBlockListFooter } from './block-list-footer';
 export { default as __experimentalBlockSettingsMenuFirstItem } from './block-settings-menu/block-settings-menu-first-item';
-export { default as __experimentalBlockSettingsMenuPluginsExtension } from './block-settings-menu/block-settings-menu-plugins-extension';
 export { default as __experimentalInserterMenuExtension } from './inserter-menu-extension';
-export {
-	__experimentalPageTemplatePicker,
-	__experimentalWithPageTemplatePickerVisible,
-	__experimentalUsePageTemplatePickerVisible,
-} from './page-template-picker';
 export { default as BlockInspector } from './block-inspector';
 export { default as BlockList } from './block-list';
 export { default as BlockMover } from './block-mover';
 export { default as BlockPreview } from './block-preview';
 export { default as BlockSelectionClearer } from './block-selection-clearer';
 export { default as BlockSettingsMenu } from './block-settings-menu';
+export { default as BlockSettingsMenuControls } from './block-settings-menu-controls';
 export { default as BlockTitle } from './block-title';
 export { default as BlockToolbar } from './block-toolbar';
 export { default as CopyHandler } from './copy-handler';
@@ -92,3 +86,4 @@ export { default as WritingFlow } from './writing-flow';
  */
 
 export { default as BlockEditorProvider } from './provider';
+export { default as useSimulatedMediaQuery } from './simulate-media-query';
