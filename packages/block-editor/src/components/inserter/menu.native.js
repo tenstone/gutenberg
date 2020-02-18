@@ -33,12 +33,7 @@ export class InserterMenu extends Component {
 	}
 
 	componentDidMount() {
-		const { autoInsertBlock, onSelect } = this.props;
-		if ( autoInsertBlock ) {
-			onSelect( autoInsertBlock );
-		} else {
-			this.props.showInsertionPoint();
-		}
+		this.props.showInsertionPoint();
 	}
 
 	componentWillUnmount() {
@@ -163,25 +158,15 @@ export default compose(
 			destinationRootClientId
 		);
 
-		const items = getInserterItems( destinationRootClientId );
-
-		//describe as a generic solution for more than 1 block
-		//allow to pass block-specific checks from block or pass
-		const autoInsertBlock = items <= 1 &&
-			destinationRootBlockName === 'core/columns' && {
-				name: 'core/column',
-			};
-
 		const {
 			__experimentalShouldInsertAtTheTop: shouldInsertAtTheTop,
 		} = getSettings();
 
 		return {
 			rootChildBlocks: getChildBlockNames( destinationRootBlockName ),
-			items,
+			items: getInserterItems( destinationRootClientId ),
 			destinationRootClientId,
 			shouldInsertAtTheTop,
-			autoInsertBlock,
 		};
 	} ),
 	withDispatch( ( dispatch, ownProps, { select } ) => {
