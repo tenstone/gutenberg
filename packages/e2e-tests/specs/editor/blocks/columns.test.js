@@ -16,7 +16,10 @@ describe( 'Columns', () => {
 
 	it( 'restricts all blocks inside the columns block', async () => {
 		await insertBlock( 'Columns' );
-		await page.click( 'button[text()="Two columns; equal split"]' );
+		const variationButton = await page.$x(
+			'//button//span[text()="Two columns; equal split"]'
+		);
+		await variationButton.click();
 		await page.click( '[aria-label="Block navigation"]' );
 		const columnBlockMenuItem = (
 			await page.$x(
