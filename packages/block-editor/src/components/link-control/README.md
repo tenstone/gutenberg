@@ -57,6 +57,14 @@ Value change handler, called with the updated value if the user selects a new li
 />
 ```
 
+### showSuggestions
+
+- Type: `boolean`
+- Required: No
+- Default: `true`
+
+Whether to present suggestions when typing the URL.
+
 ### showInitialSuggestions
 
 - Type: `boolean`

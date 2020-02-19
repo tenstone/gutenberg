@@ -133,6 +133,7 @@ const makeCancelable = ( promise ) => {
  * @property {WPLinkControlValue=}                  value                  Current link value.
  * @property {WPLinkControlOnChangeProp=}           onChange               Value change handler, called with the updated value if
  *                                                                         the user selects a new link or updates settings.
+ * @property {boolean=}                             showSuggestions        Whether to present suggestions when typing the URL.
  * @property {boolean=}                             showInitialSuggestions Whether to present initial suggestions immediately.
  * @property {WPLinkControlCreateSuggestionProp=}   createSuggestion       Handler to manage creation of link value from suggestion.
  */
@@ -148,6 +149,7 @@ function LinkControl( {
 	value,
 	settings,
 	onChange = noop,
+	showSuggestions = true,
 	showInitialSuggestions,
 	forceIsEditingLink,
 	createSuggestion,
@@ -534,7 +536,9 @@ function LinkControl( {
 							stopEditing();
 						}
 					} }
-					renderSuggestions={ renderSearchResults }
+					renderSuggestions={
+						showSuggestions ? renderSearchResults : noop
+					}
 					fetchSuggestions={ getSearchHandler }
 					showInitialSuggestions={ showInitialSuggestions }
 					errorMessage={ errorMessage }
