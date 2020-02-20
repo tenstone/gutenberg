@@ -1,0 +1,151 @@
+{
+  "post": {
+    "description": "",
+    "hierarchical": false,
+    "viewable": true,
+    "name": "Posts",
+    "slug": "post",
+    "supports": {
+      "author": false,
+      "comments": false,
+      "custom-fields": true,
+      "editor": true,
+      "excerpt": false,
+      "page-attributes": false,
+      "revisions": false,
+      "thumbnail": false,
+      "title": true,
+      "post-formats": true
+    },
+    "taxonomies": [
+      "category",
+      "post_tag"
+    ],
+    "rest_base": "posts",
+    "_links": {
+      "collection": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/types"
+        }
+      ],
+      "wp:items": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/posts"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  "page": {
+    "description": "",
+    "hierarchical": true,
+    "viewable": true,
+    "name": "Pages",
+    "slug": "page",
+    "supports": {
+      "author": false,
+      "comments": false,
+      "custom-fields": false,
+      "discussion": false,
+      "editor": true,
+      "excerpt": true,
+      "page-attributes": false,
+      "revisions": false,
+      "thumbnail": false,
+      "title": false
+    },
+    "taxonomies": [],
+    "rest_base": "pages",
+    "_links": {
+      "collection": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/types"
+        }
+      ],
+      "wp:items": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/pages"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  "attachment": {
+    "description": "",
+    "hierarchical": false,
+    "viewable": true,
+    "name": "Media",
+    "slug": "attachment",
+    "supports": {
+      "title": true,
+      "author": true,
+      "comments": true
+    },
+    "taxonomies": [],
+    "rest_base": "media",
+    "_links": {
+      "collection": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/types"
+        }
+      ],
+      "wp:items": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/media"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  "wp_block": {
+    "description": "",
+    "hierarchical": false,
+    "viewable": false,
+    "name": "Blocks",
+    "slug": "wp_block",
+    "supports": {
+      "title": true,
+      "editor": true
+    },
+    "taxonomies": [],
+    "rest_base": "blocks",
+    "_links": {
+      "collection": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/types"
+        }
+      ],
+      "wp:items": [
+        {
+          "href": "https://demo.wp-api.org/wp-json/wp/v2/blocks"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    },
+    "headers": []
+  }
+}

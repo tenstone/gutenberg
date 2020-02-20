@@ -3,7 +3,6 @@ build
 build-module
 build-style
 node_modules
-gutenberg.zip
 
 # Directories/files that may appear in your environment
 .DS_Store
@@ -17,3 +16,4 @@ playground/dist
 
 # Report generated from jest-junit
 test/native/junit.xml
+.idea
