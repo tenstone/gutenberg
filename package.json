@@ -156,6 +156,7 @@
 		"typescript": "3.5.3",
 		"uuid": "3.3.2",
 		"webpack": "4.41.0",
+		"webpack-cli": "3.3.11",
 		"worker-farm": "1.7.0"
 	},
 	"scripts": {
@@ -165,16 +166,9 @@
 		"build:packages": "node ./bin/packages/build.js",
 		"build": "npm run build:packages && wp-scripts build",
 		"check-engines": "wp-scripts check-engines",
-		"check-licenses": "concurrently \"wp-scripts check-licenses --prod --gpl2\" \"wp-scripts check-licenses --dev\"",
-		"precheck-local-changes": "npm run docs:build",
-		"check-local-changes": "( git diff -U0 | xargs -0 node bin/process-git-diff ) || ( echo \"There are local uncommitted changes after one or both of 'npm install' or 'npm run docs:build'!\" && exit 1 );",
 		"predev": "npm run check-engines",
 		"dev": "npm run build:packages && concurrently \"wp-scripts start\" \"npm run dev:packages\"",
 		"dev:packages": "node ./bin/packages/watch.js",
-		"docs:build": "node ./docs/tool/index.js && node ./bin/update-readmes.js",
-		"fixtures:clean": "rimraf \"packages/e2e-tests/fixtures/blocks/*.+(json|serialized.html)\"",
-		"fixtures:generate": "npm run fixtures:server-registered && cross-env GENERATE_MISSING_FIXTURES=y npm run test-unit",
-		"fixtures:regenerate": "npm run fixtures:clean && npm run fixtures:generate",
 		"lint": "concurrently \"npm run lint-js\" \"npm run lint-pkg-json\" \"npm run lint-css\" \"npm run lint-types\"",
 		"lint-js": "wp-scripts lint-js",
 		"lint-js:fix": "npm run lint-js -- --fix",
@@ -182,7 +176,6 @@
 		"lint-css": "wp-scripts lint-style '**/*.scss'",
 		"lint-css:fix": "npm run lint-css -- --fix",
 		"lint-types": "tsc",
-		"package-plugin": "./bin/build-plugin-zip.sh",
 		"publish:check": "npm run build:packages && lerna updated",
 		"publish:dev": "npm run build:packages && lerna publish --dist-tag next",
 		"publish:legacy": "npm run build:packages && lerna publish --dist-tag legacy",
@@ -219,9 +212,6 @@
 		],
 		"*.js": [
 			"wp-scripts lint-js"
-		],
-		"{docs/{toc.json,tool/*.js},packages/{*/README.md,*/src/{actions,selectors}.js,components/src/*/**/README.md}}": [
-			"node ./docs/tool/index.js"
 		],
 		"packages/**/*.js": [
 			"node ./bin/update-readmes.js"
