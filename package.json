@@ -172,13 +172,11 @@
 	},
 	"scripts": {
 		"start": "node scripts/start.js",
-		"prebuild": "npm run check-engines",
 		"clean:packages": "rimraf ./packages/*/build ./packages/*/build-module ./packages/*/build-style ./packages/*/node_modules",
 		"prebuild:packages": "npm run clean:packages && lerna run build",
 		"build:packages": "node ./bin/packages/build.js",
 		"build": "npm run build:packages && wp-scripts build",
 		"check-engines": "wp-scripts check-engines",
-		"predev": "npm run check-engines",
 		"dev": "npm run build:packages && concurrently \"wp-scripts start\" \"npm run dev:packages\"",
 		"dev:packages": "node ./bin/packages/watch.js",
 		"lint": "concurrently \"npm run lint-js\" \"npm run lint-pkg-json\" \"npm run lint-css\" \"npm run lint-types\"",
@@ -188,20 +186,12 @@
 		"lint-css": "wp-scripts lint-style '**/*.scss'",
 		"lint-css:fix": "npm run lint-css -- --fix",
 		"lint-types": "tsc",
-		"publish:check": "npm run build:packages && lerna updated",
-		"publish:dev": "npm run build:packages && lerna publish --dist-tag next",
-		"publish:legacy": "npm run build:packages && lerna publish --dist-tag legacy",
-		"publish:prod": "npm run build:packages && lerna publish",
 		"test": "npm run lint && npm run test-unit",
-		"test-e2e": "wp-scripts test-e2e --config packages/e2e-tests/jest.config.js",
-		"test-e2e:watch": "npm run test-e2e -- --watch",
-		"test-performance": "wp-scripts test-e2e --config packages/e2e-tests/jest.performance.config.js",
 		"test-unit": "wp-scripts test-unit-js --config test/unit/jest.config.js",
 		"test-unit:update": "npm run test-unit -- --updateSnapshot",
 		"test-unit:watch": "npm run test-unit -- --watch",
 		"test-unit:native": "cd test/native/ && cross-env NODE_ENV=test jest --config ./jest.config.js",
-		"test-unit:native:debug": "cd test/native/ && node --inspect-brk ../../node_modules/.bin/jest --runInBand --verbose --config ./jest.config.js",
-		"preenv": "npm run check-engines"
+		"test-unit:native:debug": "cd test/native/ && node --inspect-brk ../../node_modules/.bin/jest --runInBand --verbose --config ./jest.config.js"
 	},
 	"husky": {
 		"hooks": {
