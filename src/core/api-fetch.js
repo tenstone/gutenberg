@@ -1,6 +1,5 @@
 
 import apiFetch from '../globals/api-fetch'
-console.log(window.wp)
 const {
   use,
   createNonceMiddleware,

@@ -171,7 +171,7 @@
 		"worker-farm": "1.7.0"
 	},
 	"scripts": {
-		"start": "node scripts/start.js",
+		"start": "node config/scripts/start.js",
 		"clean:packages": "rimraf ./packages/*/build ./packages/*/build-module ./packages/*/build-style ./packages/*/node_modules",
 		"prebuild:packages": "npm run clean:packages && lerna run build",
 		"build:packages": "node ./bin/packages/build.js",
