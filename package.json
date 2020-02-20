@@ -212,9 +212,6 @@
 		],
 		"*.js": [
 			"wp-scripts lint-js"
-		],
-		"packages/**/*.js": [
-			"node ./bin/update-readmes.js"
 		]
 	}
 }
