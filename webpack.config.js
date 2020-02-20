@@ -31,6 +31,8 @@ const gutenbergPackages = Object.keys(dependencies)
     .filter((packageName) => packageName.startsWith(WORDPRESS_NAMESPACE))
     .map((packageName) => packageName.replace(WORDPRESS_NAMESPACE, ''));
 
+const outputPath = "./examples/vendor/gutenberg"
+
 module.exports = {
     mode,
     entry: gutenbergPackages.reduce((memo, packageName) => {
@@ -40,7 +42,7 @@ module.exports = {
     }, {}),
     output: {
         devtoolNamespace: 'wp',
-        filename: './public/vendor/gutenberg/[basename]/index.js',
+        filename: `${outputPath}/[basename]/index.js`,
         path: __dirname,
         library: ['wp', '[name]'],
         libraryTarget: 'this',
@@ -94,7 +96,7 @@ module.exports = {
         new CopyWebpackPlugin(
             gutenbergPackages.map((packageName) => ({
                 from: `./packages/${packageName}/build-style/*.css`,
-                to: `./public/vendor/gutenberg/${packageName}/`,
+                to: `${outputPath}/${packageName}/`,
                 flatten: true,
                 transform: (content) => {
                     if (mode === 'production') {
