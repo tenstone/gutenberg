@@ -89,7 +89,6 @@
 		"@wordpress/docgen": "file:packages/docgen",
 		"@wordpress/e2e-test-utils": "file:packages/e2e-test-utils",
 		"@wordpress/e2e-tests": "file:packages/e2e-tests",
-		"@wordpress/env": "file:packages/env",
 		"@wordpress/eslint-plugin": "file:packages/eslint-plugin",
 		"@wordpress/jest-console": "file:packages/jest-console",
 		"@wordpress/jest-preset-default": "file:packages/jest-preset-default",
@@ -174,19 +173,16 @@
 		"dev:packages": "node ./bin/packages/watch.js",
 		"docs:build": "node ./docs/tool/index.js && node ./bin/update-readmes.js",
 		"fixtures:clean": "rimraf \"packages/e2e-tests/fixtures/blocks/*.+(json|serialized.html)\"",
-		"fixtures:server-registered": "wp-scripts env docker-run php ./bin/get-server-blocks.php > test/integration/full-content/server-registered.json",
 		"fixtures:generate": "npm run fixtures:server-registered && cross-env GENERATE_MISSING_FIXTURES=y npm run test-unit",
 		"fixtures:regenerate": "npm run fixtures:clean && npm run fixtures:generate",
 		"lint": "concurrently \"npm run lint-js\" \"npm run lint-pkg-json\" \"npm run lint-css\" \"npm run lint-types\"",
 		"lint-js": "wp-scripts lint-js",
 		"lint-js:fix": "npm run lint-js -- --fix",
-		"lint-php": "wp-scripts env lint-php",
 		"lint-pkg-json": "wp-scripts lint-pkg-json . 'packages/*/package.json'",
 		"lint-css": "wp-scripts lint-style '**/*.scss'",
 		"lint-css:fix": "npm run lint-css -- --fix",
 		"lint-types": "tsc",
 		"package-plugin": "./bin/build-plugin-zip.sh",
-		"pot-to-php": "./bin/pot-to-php.js",
 		"publish:check": "npm run build:packages && lerna updated",
 		"publish:dev": "npm run build:packages && lerna publish --dist-tag next",
 		"publish:legacy": "npm run build:packages && lerna publish --dist-tag legacy",
@@ -195,12 +191,9 @@
 		"test-e2e": "wp-scripts test-e2e --config packages/e2e-tests/jest.config.js",
 		"test-e2e:watch": "npm run test-e2e -- --watch",
 		"test-performance": "wp-scripts test-e2e --config packages/e2e-tests/jest.performance.config.js",
-		"test-php": "npm run lint-php && npm run test-unit-php",
 		"test-unit": "wp-scripts test-unit-js --config test/unit/jest.config.js",
 		"test-unit:update": "npm run test-unit -- --updateSnapshot",
 		"test-unit:watch": "npm run test-unit -- --watch",
-		"test-unit-php": "wp-scripts env test-php",
-		"test-unit-php-multisite": "cross-env WP_MULTISITE=1 wp-scripts env test-php",
 		"test-unit:native": "cd test/native/ && cross-env NODE_ENV=test jest --config ./jest.config.js",
 		"test-unit:native:debug": "cd test/native/ && node --inspect-brk ../../node_modules/.bin/jest --runInBand --verbose --config ./jest.config.js",
 		"prestorybook:build": "npm run build:packages",
@@ -209,8 +202,6 @@
 		"storybook:dev": "concurrently \"npm run dev:packages\" \"start-storybook -c ./storybook\"",
 		"design-system:build": "echo \"Please use storybook:build instead.\"",
 		"design-system:dev": "echo \"Please use storybook:dev instead.\"",
-		"playground:build": "npm run storybook:build",
-		"playground:dev": "echo \"Please use storybook:dev instead.\"",
 		"preenv": "npm run check-engines",
 		"env": "wp-scripts env"
 	},
@@ -235,18 +226,5 @@
 		"packages/**/*.js": [
 			"node ./bin/update-readmes.js"
 		]
-	},
-	"wp-env": {
-		"plugin-dir": "gutenberg",
-		"plugin-name": "Gutenberg",
-		"docker-template": "./bin/docker-compose.override.yml.template",
-		"welcome-logo": [
-			",⁻⁻⁻·       .                 |",
-			"|  ،⁓’.   . |---  ,---. ,---. |---. ,---. ,---. ,---.",
-			"|   | |   | |     |---' |   | |   | |---' |     |   |",
-			"`---' `---' `---’ `---’ '   ` `---' `---’ `     `---|",
-			"                                                `---'"
-		],
-		"welcome-build-command": "npm run dev"
 	}
 }
