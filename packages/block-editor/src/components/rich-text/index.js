@@ -7,7 +7,7 @@ import { omit } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { RawHTML, Component, createRef, Platform } from '@wordpress/element';
+import { RawHTML, Component, useRef, Platform, forwardRef } from '@wordpress/element';
 import { withDispatch, withSelect } from '@wordpress/data';
 import { pasteHandler, children as childrenSource, getBlockTransforms, findTransform, isUnmodifiedDefaultBlock } from '@wordpress/blocks';
 import { withInstanceId, compose } from '@wordpress/compose';
@@ -25,7 +25,6 @@ import {
 	toHTMLString,
 	slice,
 } from '@wordpress/rich-text';
-import { withFilters } from '@wordpress/components';
 import deprecated from '@wordpress/deprecated';
 import { isURL } from '@wordpress/url';
 
@@ -38,8 +37,8 @@ import { RemoveBrowserShortcuts } from './remove-browser-shortcuts';
 import { filePasteHandler } from './file-paste-handler';
 import FormatToolbarContainer from './format-toolbar-container';
 
-const wrapperClasses = 'editor-rich-text block-editor-rich-text';
-const classes = 'editor-rich-text__editable block-editor-rich-text__editable';
+const wrapperClasses = 'block-editor-rich-text';
+const classes = 'block-editor-rich-text__editable';
 
 /**
  * Get the multiline tag based on the multiline prop.
@@ -59,7 +58,6 @@ function getMultilineTag( multiline ) {
 class RichTextWrapper extends Component {
 	constructor() {
 		super( ...arguments );
-		this.ref = createRef();
 		this.onEnter = this.onEnter.bind( this );
 		this.onSplit = this.onSplit.bind( this );
 		this.onPaste = this.onPaste.bind( this );
@@ -122,7 +120,7 @@ class RichTextWrapper extends Component {
 		}
 	}
 
-	onPaste( { value, onChange, html, plainText, files } ) {
+	onPaste( { value, onChange, html, plainText, files, activeFormats } ) {
 		const {
 			onReplace,
 			onSplit,
@@ -174,6 +172,18 @@ class RichTextWrapper extends Component {
 
 		if ( typeof content === 'string' ) {
 			let valueToInsert = create( { html: content } );
+
+			// If there are active formats, merge them with the pasted formats.
+			if ( activeFormats.length ) {
+				let index = valueToInsert.formats.length;
+
+				while ( index-- ) {
+					valueToInsert.formats[ index ] = [
+						...activeFormats,
+						...( valueToInsert.formats[ index ] || [] ),
+					];
+				}
+			}
 
 			// If the content should be multiline, we should process text
 			// separated by a line break as separate lines.
@@ -340,10 +350,6 @@ class RichTextWrapper extends Component {
 			// eslint-disable-next-line no-unused-vars
 			canUserUseUnfilteredHTML,
 			// eslint-disable-next-line no-unused-vars
-			clientId,
-			// eslint-disable-next-line no-unused-vars
-			identifier,
-			// eslint-disable-next-line no-unused-vars
 			instanceId,
 			// To do: find a better way to implicitly inherit props.
 			start,
@@ -351,8 +357,8 @@ class RichTextWrapper extends Component {
 			style,
 			preserveWhiteSpace,
 			disabled,
-			// From experimental filter. To do: pick props instead.
-			...experimentalProps
+			forwardedRef,
+			...props
 		} = this.props;
 		const multilineTag = getMultilineTag( multiline );
 
@@ -371,8 +377,8 @@ class RichTextWrapper extends Component {
 
 		const content = (
 			<RichText
-				{ ...experimentalProps }
-				ref={ this.ref }
+				{ ...props }
+				ref={ forwardedRef }
 				value={ adjustedValue }
 				onChange={ adjustedOnChange }
 				selectionStart={ selectionStart }
@@ -405,10 +411,10 @@ class RichTextWrapper extends Component {
 				start={ start }
 				reversed={ reversed }
 			>
-				{ ( { isSelected, value, onChange, Editable } ) =>
+				{ ( { isSelected, value, onChange, onFocus, Editable } ) =>
 					<>
-						{ children && children( { value, onChange } ) }
-						{ isSelected && hasFormats && ( <FormatToolbarContainer inline={ inlineToolbar } anchorRef={ this.ref.current } /> ) }
+						{ children && children( { value, onChange, onFocus } ) }
+						{ isSelected && hasFormats && ( <FormatToolbarContainer inline={ inlineToolbar } anchorRef={ forwardedRef.current } /> ) }
 						{ isSelected && <RemoveBrowserShortcuts /> }
 						<Autocomplete
 							onReplace={ onReplace }
@@ -480,7 +486,10 @@ const RichTextContainer = compose( [
 
 		const selectionStart = getSelectionStart();
 		const selectionEnd = getSelectionEnd();
-		const { __experimentalCanUserUseUnfilteredHTML } = getSettings();
+		const {
+			__experimentalCanUserUseUnfilteredHTML,
+			__experimentalUndo: undo,
+		} = getSettings();
 		if ( isSelected === undefined ) {
 			isSelected = (
 				selectionStart.clientId === clientId &&
@@ -510,6 +519,7 @@ const RichTextContainer = compose( [
 			isSelected,
 			didAutomaticChange: didAutomaticChange(),
 			disabled: isMultiSelecting() || hasMultiSelection(),
+			undo,
 			...extraProps,
 		};
 	} ),
@@ -525,7 +535,6 @@ const RichTextContainer = compose( [
 			selectionChange,
 			__unstableMarkAutomaticChange,
 		} = dispatch( 'core/block-editor' );
-		const { undo } = dispatch( 'core/editor' );
 
 		return {
 			onCreateUndoLevel: __unstableMarkLastChangeAsPersistent,
@@ -535,13 +544,16 @@ const RichTextContainer = compose( [
 				selectionChange( clientId, identifier, start, end );
 			},
 			markAutomaticChange: __unstableMarkAutomaticChange,
-			undo,
 		};
 	} ),
-	withFilters( 'experimentalRichText' ),
 ] )( RichTextWrapper );
 
-RichTextContainer.Content = ( { value, tagName: Tag, multiline, ...props } ) => {
+const ForwardedRichTextContainer = forwardRef( ( props, ref ) => {
+	const fallbackRef = useRef();
+	return <RichTextContainer { ...props } forwardedRef={ ref || fallbackRef } />;
+} );
+
+ForwardedRichTextContainer.Content = ( { value, tagName: Tag, multiline, ...props } ) => {
 	// Handle deprecated `children` and `node` sources.
 	if ( Array.isArray( value ) ) {
 		value = childrenSource.toHTML( value );
@@ -562,11 +574,11 @@ RichTextContainer.Content = ( { value, tagName: Tag, multiline, ...props } ) => 
 	return content;
 };
 
-RichTextContainer.isEmpty = ( value ) => {
+ForwardedRichTextContainer.isEmpty = ( value ) => {
 	return ! value || value.length === 0;
 };
 
-RichTextContainer.Content.defaultProps = {
+ForwardedRichTextContainer.Content.defaultProps = {
 	format: 'string',
 	value: '',
 };
@@ -574,7 +586,7 @@ RichTextContainer.Content.defaultProps = {
 /**
  * @see https://github.com/WordPress/gutenberg/blob/master/packages/block-editor/src/components/rich-text/README.md
  */
-export default RichTextContainer;
+export default ForwardedRichTextContainer;
 export { RichTextShortcut } from './shortcut';
 export { RichTextToolbarButton } from './toolbar-button';
 export { __unstableRichTextInputEvent } from './input-event';

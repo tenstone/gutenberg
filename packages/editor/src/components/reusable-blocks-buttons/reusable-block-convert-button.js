@@ -26,16 +26,14 @@ export function ReusableBlockConvertButton( {
 		<>
 			{ ! isReusable && (
 				<MenuItem
-					className="editor-block-settings-menu__control block-editor-block-settings-menu__control"
 					icon="controls-repeat"
 					onClick={ onConvertToReusable }
 				>
-					{ __( 'Add to Reusable Blocks' ) }
+					{ __( 'Add to Reusable blocks' ) }
 				</MenuItem>
 			) }
 			{ isReusable && (
 				<MenuItem
-					className="editor-block-settings-menu__control block-editor-block-settings-menu__control"
 					icon="controls-repeat"
 					onClick={ onConvertToStatic }
 				>
@@ -68,21 +66,21 @@ export default compose( [
 
 		// Show 'Convert to Regular Block' when selected block is a reusable block
 		const isVisible = isReusable || (
-			// Hide 'Add to Reusable Blocks' when reusable blocks are disabled
+			// Hide 'Add to Reusable blocks' when reusable blocks are disabled
 			canInsertBlockType( 'core/block' ) &&
 
 			every( blocks, ( block ) => (
 				// Guard against the case where a regular block has *just* been converted
 				!! block &&
 
-				// Hide 'Add to Reusable Blocks' on invalid blocks
+				// Hide 'Add to Reusable blocks' on invalid blocks
 				block.isValid &&
 
-				// Hide 'Add to Reusable Blocks' when block doesn't support being made reusable
+				// Hide 'Add to Reusable blocks' when block doesn't support being made reusable
 				hasBlockSupport( block.name, 'reusable', true )
 			) ) &&
 
-			// Hide 'Add to Reusable Blocks' when current doesn't have permission to do that
+			// Hide 'Add to Reusable blocks' when current doesn't have permission to do that
 			!! canUser( 'create', 'blocks' )
 		);
 

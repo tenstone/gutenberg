@@ -9,30 +9,47 @@ import { useSelect } from '@wordpress/data';
 
 import BlockControls from '../block-controls';
 import BlockFormatControls from '../block-format-controls';
-import BlockMobileToolbar from '../block-mobile-toolbar';
 import BlockSettingsMenu from '../block-settings-menu';
 import BlockSwitcher from '../block-switcher';
 import MultiBlocksSwitcher from '../block-switcher/multi-blocks-switcher';
+import BlockMover from '../block-mover';
 
 export default function BlockToolbar() {
-	const { blockClientIds, isValid, mode } = useSelect( ( select ) => {
+	const {
+		blockClientIds,
+		isValid,
+		mode,
+		moverDirection,
+		hasMovers = true,
+	} = useSelect( ( select ) => {
 		const {
 			getBlockMode,
 			getSelectedBlockClientIds,
 			isBlockValid,
+			getBlockRootClientId,
+			getBlockListSettings,
 		} = select( 'core/block-editor' );
 		const selectedBlockClientIds = getSelectedBlockClientIds();
+		const blockRootClientId = getBlockRootClientId( selectedBlockClientIds[ 0 ] );
+
+		const {
+			__experimentalMoverDirection,
+			__experimentalUIParts = {},
+		} = getBlockListSettings( blockRootClientId ) || {};
 
 		return {
 			blockClientIds: selectedBlockClientIds,
+			rootClientId: blockRootClientId,
 			isValid: selectedBlockClientIds.length === 1 ?
 				isBlockValid( selectedBlockClientIds[ 0 ] ) :
 				null,
 			mode: selectedBlockClientIds.length === 1 ?
 				getBlockMode( selectedBlockClientIds[ 0 ] ) :
 				null,
+			moverDirection: __experimentalMoverDirection,
+			hasMovers: __experimentalUIParts.hasMovers,
 		};
-	} );
+	}, [] );
 
 	if ( blockClientIds.length === 0 ) {
 		return null;
@@ -40,7 +57,11 @@ export default function BlockToolbar() {
 
 	if ( blockClientIds.length > 1 ) {
 		return (
-			<div className="editor-block-toolbar block-editor-block-toolbar">
+			<div className="block-editor-block-toolbar">
+				{ hasMovers && ( <BlockMover
+					clientIds={ blockClientIds }
+					__experimentalOrientation={ moverDirection }
+				/> ) }
 				<MultiBlocksSwitcher />
 				<BlockSettingsMenu clientIds={ blockClientIds } />
 			</div>
@@ -48,10 +69,13 @@ export default function BlockToolbar() {
 	}
 
 	return (
-		<div className="editor-block-toolbar block-editor-block-toolbar">
+		<div className="block-editor-block-toolbar">
+			{ hasMovers && ( <BlockMover
+				clientIds={ blockClientIds }
+				__experimentalOrientation={ moverDirection }
+			/> ) }
 			{ mode === 'visual' && isValid && (
 				<>
-					{ blockClientIds.length === 1 && <BlockMobileToolbar clientId={ blockClientIds[ 0 ] } /> }
 					<BlockSwitcher clientIds={ blockClientIds } />
 					<BlockControls.Slot bubblesVirtually className="block-editor-block-toolbar__slot" />
 					<BlockFormatControls.Slot bubblesVirtually className="block-editor-block-toolbar__slot" />

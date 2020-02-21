@@ -10,11 +10,14 @@ import classnames from 'classnames';
 import {
 	useMemo,
 	Fragment,
+	useRef,
 } from '@wordpress/element';
 import {
 	InnerBlocks,
 	InspectorControls,
 	BlockControls,
+	FontSizePicker,
+	withFontSizes,
 	__experimentalUseColors,
 } from '@wordpress/block-editor';
 
@@ -43,20 +46,41 @@ import * as navIcons from './icons';
 function Navigation( {
 	attributes,
 	clientId,
-	pages,
-	isRequestingPages,
-	hasResolvedPages,
+	fontSize,
 	hasExistingNavItems,
-	updateNavItemBlocks,
+	hasResolvedPages,
+	isRequestingPages,
+	pages,
 	setAttributes,
+	setFontSize,
+	updateNavItemBlocks,
 } ) {
 	//
 	// HOOKS
 	//
 	/* eslint-disable @wordpress/no-unused-vars-before-return */
-	const { TextColor } = __experimentalUseColors(
-		[ { name: 'textColor', property: 'color' } ],
+	const ref = useRef();
+
+	const {
+		TextColor,
+		BackgroundColor,
+		InspectorControlsColorPanel,
+		ColorPanel,
+	} = __experimentalUseColors(
+		[
+			{ name: 'textColor', property: 'color' },
+			{ name: 'backgroundColor', className: 'background-color' },
+		],
+		{
+			contrastCheckers: [ { backgroundColor: true, textColor: true, fontSize: fontSize.size } ],
+			colorDetector: { targetRef: ref },
+			colorPanelProps: {
+				initialOpen: true,
+			},
+		},
+		[ fontSize.size ]
 	);
+
 	/* eslint-enable @wordpress/no-unused-vars-before-return */
 	const { navigatorToolbarButton, navigatorModal } = useBlockNavigator( clientId );
 
@@ -73,8 +97,8 @@ function Navigation( {
 						type,
 						id,
 						url,
-						label: escape( title.rendered ),
-						title: escape( title.raw ),
+						label: ! title.rendered ? __( '(no title)' ) : escape( title.rendered ),
+						title: ! title.raw ? __( '(no title)' ) : escape( title.raw ),
 						opensInNewTab: false,
 					}
 				)
@@ -108,7 +132,11 @@ function Navigation( {
 
 	const blockClassNames = classnames( 'wp-block-navigation', {
 		[ `items-justification-${ attributes.itemsJustification }` ]: attributes.itemsJustification,
+		[ fontSize.class ]: fontSize.class,
 	} );
+	const blockInlineStyles = {
+		fontSize: fontSize.size ? fontSize.size + 'px' : undefined,
+	};
 
 	// If we don't have existing items or the User hasn't
 	// indicated they want to automatically add top level Pages
@@ -122,14 +150,17 @@ function Navigation( {
 					label={ __( 'Navigation' ) }
 					instructions={ __( 'Create a Navigation from all existing pages, or create an empty one.' ) }
 				>
-					<div className="wp-block-navigation-placeholder__buttons">
+					<div
+						ref={ ref }
+						className="wp-block-navigation-placeholder__buttons"
+					>
 						<Button
-							isDefault
+							isSecondary
 							className="wp-block-navigation-placeholder__button"
 							onClick={ handleCreateFromExistingPages }
 							disabled={ ! hasPages }
 						>
-							{ __( 'Create from all top pages' ) }
+							{ __( 'Create from all top-level pages' ) }
 						</Button>
 
 						<Button
@@ -162,11 +193,13 @@ function Navigation( {
 				<ToolbarGroup>
 					{ navigatorToolbarButton }
 				</ToolbarGroup>
-				<BlockColorsStyleSelector
-					value={ TextColor.color }
-					onChange={ TextColor.setColor }
-				/>
 
+				<BlockColorsStyleSelector
+					TextColor={ TextColor }
+					BackgroundColor={ BackgroundColor }
+				>
+					{ ColorPanel }
+				</BlockColorsStyleSelector>
 			</BlockControls>
 			{ navigatorModal }
 			<InspectorControls>
@@ -175,24 +208,38 @@ function Navigation( {
 				>
 					<BlockNavigationList clientId={ clientId } />
 				</PanelBody>
-			</InspectorControls>
-			<TextColor>
-				<div className={ blockClassNames }>
-					{ ! hasExistingNavItems && isRequestingPages && <><Spinner /> { __( 'Loading Navigation…' ) } </> }
-
-					<InnerBlocks
-						allowedBlocks={ [ 'core/navigation-link' ] }
-						templateInsertUpdatesSelection={ false }
-						__experimentalMoverDirection={ 'horizontal' }
+				<PanelBody title={ __( 'Text Settings' ) }>
+					<FontSizePicker
+						value={ fontSize.size }
+						onChange={ setFontSize }
 					/>
+				</PanelBody>
+			</InspectorControls>
+			{ InspectorControlsColorPanel }
+			<TextColor>
+				<BackgroundColor>
+					<div
+						ref={ ref }
+						className={ blockClassNames }
+						style={ blockInlineStyles }
+					>
+						{ ! hasExistingNavItems && isRequestingPages && <><Spinner /> { __( 'Loading Navigation…' ) } </> }
 
-				</div>
+						<InnerBlocks
+							allowedBlocks={ [ 'core/navigation-link' ] }
+							templateInsertUpdatesSelection={ false }
+							__experimentalMoverDirection={ 'horizontal' }
+						/>
+
+					</div>
+				</BackgroundColor>
 			</TextColor>
 		</Fragment>
 	);
 }
 
 export default compose( [
+	withFontSizes( 'fontSize' ),
 	withSelect( ( select, { clientId } ) => {
 		const innerBlocks = select( 'core/block-editor' ).getBlocks( clientId );
 
